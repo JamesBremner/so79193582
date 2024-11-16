@@ -13,6 +13,11 @@ bool test2()
 {
     auto grid = gen2();
     grid.graphEdges();
+    int ei = grid.findEdge("start","0_0_2_l");
+    ei = grid.findEdge("0_0_2_l","0_0_2_b");
+    ei = grid.findEdge("0_0_2_b","0_0_1_b");
+    ei = grid.findEdge("0_0_1_b","0_0_0_b");
+    ei = grid.findEdge("0_0_0_b","1_0_0_t");
     if (grid.pathCost() < 0)
         return false;
     return true;

@@ -15,6 +15,7 @@ public:
 class cGrid
 {
 public:
+    cGrid();
     std::vector<std::vector<cCell>> myCells;
     void addRow(const std::vector<char> &types);
     struct sRowColSide
@@ -40,6 +41,9 @@ public:
     int colCount() const;
     const cCell &cell(int row, int col) const;
     void graphEdges();
+    int findEdge(
+        const std::string v1,
+        const std::string v2) const;
     double pathCost() const;
 
 private:

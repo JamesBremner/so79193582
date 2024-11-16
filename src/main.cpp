@@ -79,7 +79,10 @@ std::string cCell::connects(int layer) const
         return "  ";
     }
 }
-
+cGrid::cGrid()
+{
+    myGD.g.directed(false);
+}
 void cGrid::addRow(const std::vector<char> &types)
 {
     if (myCells.size())
@@ -125,6 +128,14 @@ cGrid::cell(int row, int col) const
         return myCells[row][col];
     static cCell null(' ');
     return null;
+}
+
+std::string vertexLabel(
+    int r, int c,
+    int layer,
+    char side)
+{
+    return std::to_string(r) +"_"+ std::to_string(c) +"_"+ std::to_string(layer) +"_"+ side;
 }
 
 void cGrid::graphEdges()
@@ -176,7 +187,7 @@ void cGrid::graphEdges()
                         if (sc_adj[0] == 'l' || sc_adj[1] == 'l')
                         {
                             std::string sv1 = srcl + "_r";
-                            std::string sv2 = std::to_string(adj_row) + std::to_string(adj_col) + std::to_string(layer) + "_l";
+                            std::string sv2 = vertexLabel(adj_row,adj_col,layer,'l');
                             ss << sv1 << " " << sv2 << " 1\n";
                             myGD.g.add(sv1, sv2);
                             myGD.edgeWeight.push_back(1);
@@ -196,7 +207,7 @@ void cGrid::graphEdges()
                         if (sc_adj[0] == 't' || sc_adj[1] == 't')
                         {
                             std::string sv1 = srcl + "_b";
-                            std::string sv2 = std::to_string(adj_row) + std::to_string(adj_col) + std::to_string(layer) + "_t";
+                            std::string sv2 = vertexLabel(adj_row,adj_col,layer,'t');
                             ss << sv1 << " " << sv2 << " 1\n";
                             myGD.g.add(sv1, sv2);
                             myGD.edgeWeight.push_back(1);
@@ -266,7 +277,13 @@ void cGrid::graphEdges()
 
     // run Dijkstra algorithm
     myPath = raven::graph::path(myGD);
+}
 
+int cGrid::findEdge(
+    const std::string v1,
+    const std::string v2) const
+{
+    return myGD.g.find(v1,v2);
 }
 
 void cGUI::draw(wex::shapes &S)
