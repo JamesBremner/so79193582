@@ -4,7 +4,14 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+
+// Windex GUI framework  https://github.com/JamesBremner/windex
 #include <wex.h>
+
+// Pathfinder graph theory library https://github.com/JamesBremner/PathFinder
+#include <GraphTheory.h>
+
+
 #include "cStarterGUI.h"
 
 class cCell
@@ -24,10 +31,34 @@ class cGrid
 public:
     std::vector<std::vector<cCell>> myCells;
     void addRow(const std::vector<char> &types);
+    struct sRowColSide
+    {
+        int row;
+        int col;
+        char side;
+        sRowColSide()
+        {
+        }
+        sRowColSide(int r, int c, char s)
+            : row(r),
+              col(c),
+              side(s)
+        {
+        }
+    };
+    void startFinish(
+        const sRowColSide &start,
+        const sRowColSide &finish);
+
     int rowCount() const;
     int colCount() const;
     const cCell &cell(int row, int col) const;
-    void graphEdges() const;
+    void graphEdges();
+
+private:
+    raven::graph::sGraphData myGD;
+    sRowColSide myStart;
+    sRowColSide myFinish;
 };
 
 cGrid gen1()
@@ -36,6 +67,9 @@ cGrid gen1()
     ret.addRow({'L', '-', 'L'});
     ret.addRow({'L', '-', 'L'});
     ret.addRow({'-', '-', 'L'});
+    ret.startFinish(
+        cGrid::sRowColSide(0, 0, 'l'),
+        cGrid::sRowColSide(2, 2, 'r'));
     return ret;
 }
 
@@ -120,6 +154,13 @@ void cGrid::addRow(const std::vector<char> &types)
     }
     myCells.push_back(row);
 }
+void cGrid::startFinish(
+    const sRowColSide &start,
+    const sRowColSide &finish)
+{
+    myStart = start;
+    myFinish = finish;
+}
 int cGrid::rowCount() const
 {
     return myCells.size();
@@ -140,7 +181,7 @@ cGrid::cell(int row, int col) const
     return null;
 }
 
-void cGrid::graphEdges() const
+void cGrid::graphEdges()
 {
     std::stringstream ss;
 
@@ -152,14 +193,17 @@ void cGrid::graphEdges() const
                 std::string sc = cell(row, col).connects(layer);
                 if (sc == "  ")
                     continue;
-                ss << std::to_string(row)
-                   << "_" << std::to_string(col)
-                   << "_" << std::to_string(layer)
-                   << "_" << sc[0] << " "
-                   << std::to_string(row)
-                   << "_" << std::to_string(col)
-                   << "_" << std::to_string(layer)
-                   << "_" << sc[1] << " 0\n";
+                std::string sv1 = std::to_string(row) +
+                                  "_" + std::to_string(col) +
+                                  "_" + std::to_string(layer) +
+                                  "_" + sc[0];
+                std::string sv2 = std::to_string(row) +
+                                  "_" + std::to_string(col) +
+                                  "_" + std::to_string(layer) +
+                                  "_" + sc[1];
+                ss << sv1 << " " << sv2 << " 0\n";
+                myGD.g.add(sv1, sv2);
+                myGD.edgeWeight.push_back(0);
             }
 
     // layer internal connections
@@ -184,12 +228,13 @@ void cGrid::graphEdges() const
                     if (sc[0] == 'r' || sc[1] == 'r')
                     {
                         if (sc_adj[0] == 'l' || sc_adj[1] == 'l')
-                            ss << srcl
-                               << "_r "
-                               << std::to_string(adj_row)
-                               << "_" << std::to_string(adj_col)
-                               << "_" << std::to_string(layer)
-                               << "_l 1\n";
+                        {
+                            std::string sv1 = srcl + "_r";
+                            std::string sv2 = std::to_string(adj_row) + std::to_string(adj_col) + std::to_string(layer) + "_l";
+                            ss << sv1 << " " << sv2 << " 1\n";
+                            myGD.g.add(sv1, sv2);
+                            myGD.edgeWeight.push_back(1);
+                        }
                     }
                 }
 
@@ -203,12 +248,13 @@ void cGrid::graphEdges() const
                     if (sc[0] == 'b' || sc[1] == 'b')
                     {
                         if (sc_adj[0] == 't' || sc_adj[1] == 't')
-                            ss << srcl
-                               << "_b "
-                               << std::to_string(adj_row)
-                               << "_" << std::to_string(adj_col)
-                               << "_" << std::to_string(layer)
-                               << "_t 1\n";
+                        {
+                            std::string sv1 = srcl + "_b";
+                            std::string sv2 = std::to_string(adj_row) + std::to_string(adj_col) + std::to_string(layer) + "_t";
+                            ss << sv1 << " " << sv2 << " 1\n";
+                            myGD.g.add(sv1, sv2);
+                            myGD.edgeWeight.push_back(1);
+                        }
                     }
                 }
             }
@@ -218,7 +264,8 @@ void cGrid::graphEdges() const
     {
         int layer2 = layer1 - 1;
         for (int row = 0; row < rowCount(); row++)
-            for (int col = 0; col < colCount(); col++) {
+            for (int col = 0; col < colCount(); col++)
+            {
                 std::string srcl1 = std::to_string(row) +
                                     "_" + std::to_string(col) +
                                     "_" + std::to_string(layer1);
@@ -229,10 +276,54 @@ void cGrid::graphEdges() const
                 ss << srcl1 << "_r " << srcl2 << "_r 0\n";
                 ss << srcl1 << "_b " << srcl2 << "_b 0\n";
                 ss << srcl1 << "_l " << srcl2 << "_l 0\n";
+                myGD.g.add(srcl1 + "_t", srcl2 + "_t");
+                myGD.edgeWeight.push_back(0);
+                myGD.g.add(srcl1 + "_t", srcl2 + "_t");
+                myGD.edgeWeight.push_back(0);
+                myGD.g.add(srcl1 + "_r", srcl2 + "_r");
+                myGD.edgeWeight.push_back(0);
+                myGD.g.add(srcl1 + "_b", srcl2 + "_b");
+                myGD.edgeWeight.push_back(0);
+                myGD.g.add(srcl1 + "_l", srcl2 + "_l");
+                myGD.edgeWeight.push_back(0);
             }
     }
 
     std::cout << ss.str();
+
+    // connect start and finish
+    for (int layer = 0; layer < 4; layer++)
+    {
+        std::string sc = cell(myStart.row, myStart.col).connects(layer);
+        if (sc[0] == myStart.side || sc[1] == myStart.side)
+        {
+            std::string v2 = std::to_string(myStart.row) +
+                             "_" + std::to_string(myStart.col) +
+                             "_" + std::to_string(layer) +
+                             "_" + myStart.side;
+            myGD.g.add("start", v2);
+            myGD.edgeWeight.push_back(1);
+        }
+        sc = cell(myFinish.row, myFinish.col).connects(layer);
+        if (sc[0] == myFinish.side || sc[1] == myFinish.side)
+        {
+            std::string v2 = std::to_string(myFinish.row) +
+                             "_" + std::to_string(myFinish.col) +
+                             "_" + std::to_string(layer) +
+                             "_" + myFinish.side;
+            myGD.g.add("finish", v2);
+            myGD.edgeWeight.push_back(1);
+        }
+    }
+    myGD.startName = "start";
+    myGD.endName = "finish";
+
+    // run Dijkstra algorithm
+    auto pp = raven::graph::path(myGD);
+
+    if( ! pp.first.size() )
+        throw std::runtime_error(
+            "No path found"        );
 }
 
 void cGUI::draw(wex::shapes &S)
