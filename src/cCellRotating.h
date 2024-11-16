@@ -40,13 +40,16 @@ public:
     int colCount() const;
     const cCell &cell(int row, int col) const;
     void graphEdges();
+    double pathCost() const;
 
 private:
     raven::graph::sGraphData myGD;
     sRowColSide myStart;
     sRowColSide myFinish;
+    raven::graph::path_cost_t myPath;
 };
 
 cGrid gen1();
+cGrid gen2();
 
 bool unitTests();

@@ -24,7 +24,7 @@ public:
               {50, 50, 1000, 500})
     {
 
-        myGrid = gen1();
+        myGrid = gen2();
         myGrid.graphEdges();
 
         fm.events().draw(
@@ -112,6 +112,10 @@ int cGrid::colCount() const
     if (!myCells.size())
         return 0;
     return myCells[0].size();
+}
+double cGrid::pathCost() const
+{
+    return myPath.second;
 }
 const cCell &
 cGrid::cell(int row, int col) const
@@ -261,11 +265,8 @@ void cGrid::graphEdges()
     myGD.endName = "finish";
 
     // run Dijkstra algorithm
-    auto pp = raven::graph::path(myGD);
+    myPath = raven::graph::path(myGD);
 
-    if( ! pp.first.size() )
-        throw std::runtime_error(
-            "No path found"        );
 }
 
 void cGUI::draw(wex::shapes &S)
@@ -292,10 +293,8 @@ void cGUI::draw(wex::shapes &S)
 
 main()
 {
-    if(  unitTests() )
-    {
-        std::cout << "Unit Tests passed\n";
-    }
+    unitTests();
+
     cGUI theGUI;
     return 0;
 }

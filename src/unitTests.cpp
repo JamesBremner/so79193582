@@ -11,13 +11,10 @@
 
 bool test2()
 {
-    cGrid grid;
-    grid.addRow({'-', 'L'});
-    grid.addRow({'-', 'L'});
-    grid.startFinish(
-        cGrid::sRowColSide(0, 0, 'l'),
-        cGrid::sRowColSide(1, 1, 'r'));
+    auto grid = gen2();
     grid.graphEdges();
+    if (grid.pathCost() < 0)
+        return false;
     return true;
 }
 
@@ -25,16 +22,25 @@ bool test1()
 {
     auto Grid = gen1();
     Grid.graphEdges();
+    if (Grid.pathCost() < 0)
+        return false;
     return true;
 }
 
 bool unitTests()
 {
+    bool ret = true;
     if (!test2())
-        return false;
+        ret = false;
     if (!test1())
-        return false;
-    return true;
+        ret = false;
+    if( ret )
+        std::cout << "Unit Tests passed\n";
+    else {
+        std::cout << "Unit Tests FAILED!!!\n";
+        exit(1);
+    }
+    return ret;
 }
 
 cGrid gen1()
@@ -46,5 +52,15 @@ cGrid gen1()
     ret.startFinish(
         cGrid::sRowColSide(0, 0, 'l'),
         cGrid::sRowColSide(2, 2, 'r'));
+    return ret;
+}
+cGrid gen2()
+{
+    cGrid ret;
+    ret.addRow({'L', '-'});
+    ret.addRow({'L', '-'});
+    ret.startFinish(
+        cGrid::sRowColSide(0, 0, 'l'),
+        cGrid::sRowColSide(1, 1, 'r'));
     return ret;
 }
