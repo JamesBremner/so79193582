@@ -16,6 +16,7 @@ public:
     {
     }
     // Edge connection for specified layer
+    // Implements https://github.com/user-attachments/assets/4f5318e5-f4ad-4769-82c3-97b2ed48c5c4
     std::string connects(int layer) const;
 };
 class cGrid
