@@ -44,13 +44,17 @@ private:
     // draw the edge connections for the layers
     void draw(wex::shapes &S);
 };
+cCell::cCell()
+{}
 
 cCell::cCell(char t)
     : myType(t)
 {
-    if (t != 'L' && t != '-')
+    if (t != 'L' && t != '-') {
+        std::string st { t };
         throw std::runtime_error(
-            "Bad call type " + t);
+            "Bad call type " + st);
+    }
 }
 
 std::string cCell::connects(int layer) const
@@ -147,7 +151,7 @@ cGrid::cell(int row, int col) const
     if (row >= 0 && row < rowCount() &&
         col >= 0 && col < colCount())
         return myCells[row][col];
-    static cCell null(' ');
+    static cCell null;
     return null;
 }
 
@@ -159,7 +163,8 @@ std::string vertexLabel(
     return std::to_string(r) + "_" + std::to_string(c) + "_" + std::to_string(layer) + "_" + side;
 }
 
-void cGrid::solve()
+
+void cGrid::makeGraph()
 {
     std::stringstream ss;
 
@@ -289,8 +294,13 @@ void cGrid::solve()
     }
     myGD.startName = "start";
     myGD.endName = "finish";
+}
 
-    // run Dijkstra algorithm
+void cGrid::solve()
+{
+    makeGraph();
+
+    // run Dijkstra algorithm from Pathfinder library
     myPath = raven::graph::path(myGD);
 
     collapsePath();

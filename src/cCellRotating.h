@@ -6,6 +6,8 @@ class cCell
 public:
     char myType;
 
+    cCell();
+    
     /** CTOR
      * @param[in] t the type.  '-' connects opposite sides, 'L' connects adjacent sides
      * 
@@ -107,7 +109,7 @@ public:
     /// @brief 2D path
     /// @return vector of vertex labels ( row_col_rot )
     /// rot is the number of 90 dgree clockwise rotations required for path
-    
+
     std::vector<std::string> path2D() const;
 
 private:
@@ -118,6 +120,7 @@ private:
     raven::graph::path_cost_t myPath;           // 3d path
     std::vector<std::string> myPath2D;          // 2d path with rotations
 
+    void makeGraph();
     void collapsePath();
 };
 
