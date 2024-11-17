@@ -54,16 +54,18 @@ public:
     std::vector<std::string> path2D() const;
 
 private:
-    std::vector<std::vector<cCell>> myCells;
-    raven::graph::sGraphData myGD;
-    sRowColSide myStart;
-    sRowColSide myFinish;
-    raven::graph::path_cost_t myPath;
-    std::vector<std::string> myPath2D;
+    std::vector<std::vector<cCell>> myCells;    // input grid of cells extended to three dimensions
+    raven::graph::sGraphData myGD;              // equivalent graph ( vertices and edges )
+    sRowColSide myStart;                        // starting cell side
+    sRowColSide myFinish;                       // finishing cell side
+    raven::graph::path_cost_t myPath;           // 3d path
+    std::vector<std::string> myPath2D;          // 2d path with rotations
 };
 
+// generate example grids
 cGrid gen1();
 cGrid gen2();
 cGrid gen3();
 
+// run unit tests
 bool unitTests();
