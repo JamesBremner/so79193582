@@ -128,6 +128,11 @@ cGrid::path() const
         ret.push_back(myGD.g.userName(ei));
     return ret;
 }
+std::vector<std::string>
+cGrid::path2D() const
+{
+    return myPath2D;
+}
 const cCell &
 cGrid::cell(int row, int col) const
 {
@@ -277,6 +282,38 @@ void cGrid::graphEdges()
 
     // run Dijkstra algorithm
     myPath = raven::graph::path(myGD);
+
+    collapsePath();
+}
+
+void cGrid::collapsePath()
+{
+    auto pathVertexLabels = path();
+    std::string prevlabel;
+    for (auto &label : pathVertexLabels)
+    {
+        if (prevlabel.empty())
+        {
+            prevlabel = label;
+            myPath2D.push_back(label);
+            continue;
+        }
+        if( label =="finish")
+        {
+            myPath2D.push_back(label);
+            return;
+        }
+
+        auto db1 = label.substr(0, label.length() - 4);
+        auto db2 = prevlabel.substr(0, prevlabel.length() - 4);
+        if (label.substr(0, label.length() - 4) !=
+            prevlabel.substr(0, prevlabel.length() - 4))
+        {
+            myPath2D.push_back(label.substr(0, label.length() - 4));
+            std::cout << myPath2D.back() << "\n";
+        }
+        prevlabel = label;
+    }
 }
 
 int cGrid::findEdge(
@@ -310,7 +347,7 @@ void cGUI::draw(wex::shapes &S)
     }
 
     // display path
-    yoff += 60;
+    yoff += 80;
     auto path = myGrid.path();
     if (!path.size())
     {
@@ -318,10 +355,20 @@ void cGUI::draw(wex::shapes &S)
                {xoff, yoff});
         return;
     }
-    S.text("Path through extended grid",
+
+    S.text("Path through extended grid ( row, col )",
            {0, yoff});
     yoff += 20;
-    for (auto &vertex : path)
+    for (auto &vertex : myGrid.path())
+    {
+        S.text(vertex,
+               {xoff, yoff});
+        yoff += 20;
+    }
+    S.text("Path through grid ( row, col )",
+           {0, yoff});
+    yoff += 20;
+    for (auto &vertex : myGrid.path2D())
     {
         S.text(vertex,
                {xoff, yoff});

@@ -16,7 +16,7 @@ class cGrid
 {
 public:
     cGrid();
-    std::vector<std::vector<cCell>> myCells;
+
     void addRow(const std::vector<char> &types);
     struct sRowColSide
     {
@@ -37,21 +37,29 @@ public:
         const sRowColSide &start,
         const sRowColSide &finish);
 
+    // construct graph in extended grid
+    void graphEdges();
+    void collapsePath();
+
+//////////////////  Getters //////////////////
+
     int rowCount() const;
     int colCount() const;
     const cCell &cell(int row, int col) const;
-    void graphEdges();
     int findEdge(
         const std::string v1,
         const std::string v2) const;
     double pathCost() const;
     std::vector<std::string> path() const;
+    std::vector<std::string> path2D() const;
 
 private:
+    std::vector<std::vector<cCell>> myCells;
     raven::graph::sGraphData myGD;
     sRowColSide myStart;
     sRowColSide myFinish;
     raven::graph::path_cost_t myPath;
+    std::vector<std::string> myPath2D;
 };
 
 cGrid gen1();
