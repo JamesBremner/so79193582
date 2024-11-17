@@ -24,7 +24,7 @@ public:
               {50, 50, 1000, 500})
     {
 
-        myGrid = gen2();
+        myGrid = gen1();
         myGrid.graphEdges();
 
         fm.events().draw(
@@ -155,6 +155,8 @@ void cGrid::graphEdges()
 {
     std::stringstream ss;
 
+    myGD.edgeWeight.clear();
+
     // cell internal connections
     for (int layer = 3; layer >= 0; layer--)
         for (int row = 0; row < rowCount(); row++)
@@ -173,7 +175,7 @@ void cGrid::graphEdges()
                                   "_" + sc[1];
                 ss << sv1 << " " << sv2 << " 0\n";
                 myGD.g.add(sv1, sv2);
-                myGD.edgeWeight.push_back(0);
+                myGD.edgeWeight.push_back(1);
             }
 
     // layer internal connections
@@ -239,15 +241,15 @@ void cGrid::graphEdges()
                 ss << srcl1 << "_b " << srcl2 << "_b 0\n";
                 ss << srcl1 << "_l " << srcl2 << "_l 0\n";
                 myGD.g.add(srcl1 + "_t", srcl2 + "_t");
-                myGD.edgeWeight.push_back(0);
+                myGD.edgeWeight.push_back(1);
                 myGD.g.add(srcl1 + "_t", srcl2 + "_t");
-                myGD.edgeWeight.push_back(0);
+                myGD.edgeWeight.push_back(1);
                 myGD.g.add(srcl1 + "_r", srcl2 + "_r");
-                myGD.edgeWeight.push_back(0);
+                myGD.edgeWeight.push_back(1);
                 myGD.g.add(srcl1 + "_b", srcl2 + "_b");
-                myGD.edgeWeight.push_back(0);
+                myGD.edgeWeight.push_back(1);
                 myGD.g.add(srcl1 + "_l", srcl2 + "_l");
-                myGD.edgeWeight.push_back(0);
+                myGD.edgeWeight.push_back(1);
             }
     }
 
@@ -289,9 +291,10 @@ void cGrid::graphEdges()
 void cGrid::collapsePath()
 {
     auto pathVertexLabels = path();
-    std::string prevlabel;
+    std::string prevlabel, prevSide;
     for (auto &label : pathVertexLabels)
     {
+        std::string side = label.substr(label.length()-1);
         if (prevlabel.empty())
         {
             prevlabel = label;
@@ -304,15 +307,18 @@ void cGrid::collapsePath()
             return;
         }
 
-        auto db1 = label.substr(0, label.length() - 4);
-        auto db2 = prevlabel.substr(0, prevlabel.length() - 4);
-        if (label.substr(0, label.length() - 4) !=
-            prevlabel.substr(0, prevlabel.length() - 4))
+        // check if this is an internal cell connection
+        if (label.substr(0, label.length() - 2) ==
+             prevlabel.substr(0, prevlabel.length() - 2) &&
+             side != prevSide )
         {
-            myPath2D.push_back(label.substr(0, label.length() - 4));
+            myPath2D.push_back(label.substr(0, label.length() - 2));
             std::cout << myPath2D.back() << "\n";
+            int dbg = 0;
         }
+
         prevlabel = label;
+        prevSide = side;
     }
 }
 
@@ -330,18 +336,20 @@ void cGUI::draw(wex::shapes &S)
     const int xoff = 20;
     int yoff = -myGrid.rowCount() * rowsize;
 
-    // display extended grid
-    for (int layer = 3; layer >= 0; layer--)
+    // display grid
+    //for (int layer = 3; layer >= 0; layer--)
+    int layer = 0;
     {
         yoff += myGrid.rowCount() * rowsize;
-        S.text("Layer " + std::to_string(layer),
-               {0, yoff});
-        yoff += 20;
+        // S.text("Layer " + std::to_string(layer),
+        //        {0, yoff});
+        // yoff += 20;
 
         for (int row = 0; row < myGrid.rowCount(); row++)
             for (int col = 0; col < myGrid.colCount(); col++)
             {
-                S.text(myGrid.cell(row, col).connects(layer),
+                std::string st { myGrid.cell(row, col).myType };
+                S.text(st,
                        {col * colsize + xoff, row * rowsize + yoff});
             }
     }
@@ -356,16 +364,16 @@ void cGUI::draw(wex::shapes &S)
         return;
     }
 
-    S.text("Path through extended grid ( row, col )",
-           {0, yoff});
-    yoff += 20;
-    for (auto &vertex : myGrid.path())
-    {
-        S.text(vertex,
-               {xoff, yoff});
-        yoff += 20;
-    }
-    S.text("Path through grid ( row, col )",
+    // S.text("Path through extended grid ( row, col )",
+    //        {0, yoff});
+    // yoff += 20;
+    // for (auto &vertex : myGrid.path())
+    // {
+    //     S.text(vertex,
+    //            {xoff, yoff});
+    //     yoff += 20;
+    // }
+    S.text("Path through grid ( row_col_rot )",
            {0, yoff});
     yoff += 20;
     for (auto &vertex : myGrid.path2D())

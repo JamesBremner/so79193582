@@ -23,7 +23,6 @@ bool test2()
     // ei = grid.findEdge("1_0_0_r", "1_1_0_l");
     // ei = grid.findEdge("1_1_0_l", "1_1_0_r");
     // ei = grid.findEdge("1_1_0_r", "finish");
-    grid.collapsePath();
     if ( ! grid.path().size())
         return false;
     return true;
