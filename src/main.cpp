@@ -25,7 +25,7 @@ public:
     {
 
         myGrid = gen3();
-        myGrid.graphEdges();
+        myGrid.solve();
 
         fm.events().draw(
             [&](PAINTSTRUCT &ps)
@@ -44,6 +44,14 @@ private:
     // draw the edge connections for the layers
     void draw(wex::shapes &S);
 };
+
+cCell::cCell(char t)
+    : myType(t)
+{
+    if (t != 'L' && t != '-')
+        throw std::runtime_error(
+            "Bad call type " + t);
+}
 
 std::string cCell::connects(int layer) const
 {
@@ -151,7 +159,7 @@ std::string vertexLabel(
     return std::to_string(r) + "_" + std::to_string(c) + "_" + std::to_string(layer) + "_" + side;
 }
 
-void cGrid::graphEdges()
+void cGrid::solve()
 {
     std::stringstream ss;
 
@@ -294,14 +302,14 @@ void cGrid::collapsePath()
     std::string prevlabel, prevSide;
     for (auto &label : pathVertexLabels)
     {
-        std::string side = label.substr(label.length()-1);
+        std::string side = label.substr(label.length() - 1);
         if (prevlabel.empty())
         {
             prevlabel = label;
             myPath2D.push_back(label);
             continue;
         }
-        if( label =="finish")
+        if (label == "finish")
         {
             myPath2D.push_back(label);
             return;
@@ -309,8 +317,8 @@ void cGrid::collapsePath()
 
         // check if this is an internal cell connection
         if (label.substr(0, label.length() - 2) ==
-             prevlabel.substr(0, prevlabel.length() - 2) &&
-             side != prevSide )
+                prevlabel.substr(0, prevlabel.length() - 2) &&
+            side != prevSide)
         {
             myPath2D.push_back(label.substr(0, label.length() - 2));
             std::cout << myPath2D.back() << "\n";
@@ -337,7 +345,7 @@ void cGUI::draw(wex::shapes &S)
     int yoff = -myGrid.rowCount() * rowsize;
 
     // display grid
-    //for (int layer = 3; layer >= 0; layer--)
+    // for (int layer = 3; layer >= 0; layer--)
     int layer = 0;
     {
         yoff += myGrid.rowCount() * rowsize;
@@ -348,7 +356,7 @@ void cGUI::draw(wex::shapes &S)
         for (int row = 0; row < myGrid.rowCount(); row++)
             for (int col = 0; col < myGrid.colCount(); col++)
             {
-                std::string st { myGrid.cell(row, col).myType };
+                std::string st{myGrid.cell(row, col).myType};
                 S.text(st,
                        {col * colsize + xoff, row * rowsize + yoff});
             }

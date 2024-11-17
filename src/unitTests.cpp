@@ -12,7 +12,7 @@
 bool test2()
 {
     auto grid = gen2();
-    grid.graphEdges();
+    grid.solve();
 
     // int ei = grid.findEdge("start", "0_0_2_l");
     // ei = grid.findEdge("0_0_2_l", "0_0_2_b");
@@ -31,7 +31,7 @@ bool test2()
 bool test1()
 {
     auto Grid = gen1();
-    Grid.graphEdges();
+    Grid.solve();
     if ( ! Grid.path().size())
         return false;
     return true;
