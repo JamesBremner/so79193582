@@ -124,8 +124,8 @@ std::vector<std::string>
 cGrid::path() const
 {
     std::vector<std::string> ret;
-    for( int ei : myPath.first )
-        ret.push_back( myGD.g.userName(ei));
+    for (int ei : myPath.first)
+        ret.push_back(myGD.g.userName(ei));
     return ret;
 }
 const cCell &
@@ -193,7 +193,7 @@ void cGrid::graphEdges()
                     {
                         std::string sv1 = srcl + "_r";
                         std::string sv2 = vertexLabel(adj_row, adj_col, layer, 'l');
-                        //ss << sv1 << " " << sv2 << " 1\n";
+                        // ss << sv1 << " " << sv2 << " 1\n";
                         myGD.g.add(sv1, sv2);
                         myGD.edgeWeight.push_back(1);
                     }
@@ -209,7 +209,7 @@ void cGrid::graphEdges()
                     {
                         std::string sv1 = srcl + "_b";
                         std::string sv2 = vertexLabel(adj_row, adj_col, layer, 't');
-                        //ss << sv1 << " " << sv2 << " 1\n";
+                        // ss << sv1 << " " << sv2 << " 1\n";
                         myGD.g.add(sv1, sv2);
                         myGD.edgeWeight.push_back(1);
                     }
@@ -246,7 +246,7 @@ void cGrid::graphEdges()
             }
     }
 
-    //std::cout << ss.str();
+    // std::cout << ss.str();
 
     // connect start and finish
     for (int layer = 0; layer < 4; layer++)
@@ -292,6 +292,8 @@ void cGUI::draw(wex::shapes &S)
     const int rowsize = 20;
     const int xoff = 20;
     int yoff = -myGrid.rowCount() * rowsize;
+
+    // display extended grid
     for (int layer = 3; layer >= 0; layer--)
     {
         yoff += myGrid.rowCount() * rowsize;
@@ -305,6 +307,25 @@ void cGUI::draw(wex::shapes &S)
                 S.text(myGrid.cell(row, col).connects(layer),
                        {col * colsize + xoff, row * rowsize + yoff});
             }
+    }
+
+    // display path
+    yoff += 60;
+    auto path = myGrid.path();
+    if (!path.size())
+    {
+        S.text("No path found",
+               {xoff, yoff});
+        return;
+    }
+    S.text("Path through extended grid",
+           {0, yoff});
+    yoff += 20;
+    for (auto &vertex : path)
+    {
+        S.text(vertex,
+               {xoff, yoff});
+        yoff += 20;
     }
 }
 
