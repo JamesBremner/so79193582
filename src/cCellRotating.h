@@ -45,6 +45,7 @@ public:
         const std::string v1,
         const std::string v2) const;
     double pathCost() const;
+    std::vector<std::string> path() const;
 
 private:
     raven::graph::sGraphData myGD;

@@ -13,12 +13,18 @@ bool test2()
 {
     auto grid = gen2();
     grid.graphEdges();
-    int ei = grid.findEdge("start","0_0_2_l");
-    ei = grid.findEdge("0_0_2_l","0_0_2_b");
-    ei = grid.findEdge("0_0_2_b","0_0_1_b");
-    ei = grid.findEdge("0_0_1_b","0_0_0_b");
-    ei = grid.findEdge("0_0_0_b","1_0_0_t");
-    if (grid.pathCost() < 0)
+
+    // int ei = grid.findEdge("start", "0_0_2_l");
+    // ei = grid.findEdge("0_0_2_l", "0_0_2_b");
+    // ei = grid.findEdge("0_0_2_b", "0_0_1_b");
+    // ei = grid.findEdge("0_0_1_b", "0_0_0_b");
+    // ei = grid.findEdge("0_0_0_b", "1_0_0_t");
+    // ei = grid.findEdge("1_0_0_t", "1_0_0_r");
+    // ei = grid.findEdge("1_0_0_r", "1_1_0_l");
+    // ei = grid.findEdge("1_1_0_l", "1_1_0_r");
+    // ei = grid.findEdge("1_1_0_r", "finish");
+
+    if ( ! grid.path().size())
         return false;
     return true;
 }
@@ -27,7 +33,7 @@ bool test1()
 {
     auto Grid = gen1();
     Grid.graphEdges();
-    if (Grid.pathCost() < 0)
+    if ( ! Grid.path().size())
         return false;
     return true;
 }
@@ -39,9 +45,10 @@ bool unitTests()
         ret = false;
     if (!test1())
         ret = false;
-    if( ret )
+    if (ret)
         std::cout << "Unit Tests passed\n";
-    else {
+    else
+    {
         std::cout << "Unit Tests FAILED!!!\n";
         exit(1);
     }

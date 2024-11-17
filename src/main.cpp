@@ -120,6 +120,14 @@ double cGrid::pathCost() const
 {
     return myPath.second;
 }
+std::vector<std::string>
+cGrid::path() const
+{
+    std::vector<std::string> ret;
+    for( int ei : myPath.first )
+        ret.push_back( myGD.g.userName(ei));
+    return ret;
+}
 const cCell &
 cGrid::cell(int row, int col) const
 {
@@ -135,7 +143,7 @@ std::string vertexLabel(
     int layer,
     char side)
 {
-    return std::to_string(r) +"_"+ std::to_string(c) +"_"+ std::to_string(layer) +"_"+ side;
+    return std::to_string(r) + "_" + std::to_string(c) + "_" + std::to_string(layer) + "_" + side;
 }
 
 void cGrid::graphEdges()
@@ -178,40 +186,32 @@ void cGrid::graphEdges()
                 // check for connection with cell in same row, next column
                 adj_row = row;
                 adj_col = col + 1;
-                sc = cell(row, col).connects(layer);
                 sc_adj = cell(adj_row, adj_col).connects(layer);
                 if (sc_adj != "  ")
                 {
-                    if (sc[0] == 'r' || sc[1] == 'r')
+                    if (sc_adj[0] == 'l' || sc_adj[1] == 'l')
                     {
-                        if (sc_adj[0] == 'l' || sc_adj[1] == 'l')
-                        {
-                            std::string sv1 = srcl + "_r";
-                            std::string sv2 = vertexLabel(adj_row,adj_col,layer,'l');
-                            ss << sv1 << " " << sv2 << " 1\n";
-                            myGD.g.add(sv1, sv2);
-                            myGD.edgeWeight.push_back(1);
-                        }
+                        std::string sv1 = srcl + "_r";
+                        std::string sv2 = vertexLabel(adj_row, adj_col, layer, 'l');
+                        //ss << sv1 << " " << sv2 << " 1\n";
+                        myGD.g.add(sv1, sv2);
+                        myGD.edgeWeight.push_back(1);
                     }
                 }
 
                 // check for connection with cell in next row, same column
                 adj_row = row + 1;
                 adj_col = col;
-                sc = cell(row, col).connects(layer);
                 sc_adj = cell(adj_row, adj_col).connects(layer);
                 if (sc_adj != "  ")
                 {
-                    if (sc[0] == 'b' || sc[1] == 'b')
+                    if (sc_adj[0] == 't' || sc_adj[1] == 't')
                     {
-                        if (sc_adj[0] == 't' || sc_adj[1] == 't')
-                        {
-                            std::string sv1 = srcl + "_b";
-                            std::string sv2 = vertexLabel(adj_row,adj_col,layer,'t');
-                            ss << sv1 << " " << sv2 << " 1\n";
-                            myGD.g.add(sv1, sv2);
-                            myGD.edgeWeight.push_back(1);
-                        }
+                        std::string sv1 = srcl + "_b";
+                        std::string sv2 = vertexLabel(adj_row, adj_col, layer, 't');
+                        //ss << sv1 << " " << sv2 << " 1\n";
+                        myGD.g.add(sv1, sv2);
+                        myGD.edgeWeight.push_back(1);
                     }
                 }
             }
@@ -246,7 +246,7 @@ void cGrid::graphEdges()
             }
     }
 
-    std::cout << ss.str();
+    //std::cout << ss.str();
 
     // connect start and finish
     for (int layer = 0; layer < 4; layer++)
@@ -283,7 +283,7 @@ int cGrid::findEdge(
     const std::string v1,
     const std::string v2) const
 {
-    return myGD.g.find(v1,v2);
+    return myGD.g.find(v1, v2);
 }
 
 void cGUI::draw(wex::shapes &S)
