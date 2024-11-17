@@ -64,5 +64,6 @@ private:
 
 cGrid gen1();
 cGrid gen2();
+cGrid gen3();
 
 bool unitTests();

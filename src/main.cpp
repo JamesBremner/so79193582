@@ -24,7 +24,7 @@ public:
               {50, 50, 1000, 500})
     {
 
-        myGrid = gen1();
+        myGrid = gen3();
         myGrid.graphEdges();
 
         fm.events().draw(

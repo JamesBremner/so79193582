@@ -75,3 +75,14 @@ cGrid gen2()
         cGrid::sRowColSide(1, 1, 'r'));
     return ret;
 }
+cGrid gen3()
+{
+    cGrid ret;
+    ret.addRow({'L', '-', 'L'});
+    ret.addRow({'L', '-', 'L'});
+    ret.addRow({'-', 'L', 'L'});
+    ret.startFinish(
+        cGrid::sRowColSide(0, 0, 'l'),
+        cGrid::sRowColSide(2, 2, 'r'));
+    return ret;
+}
