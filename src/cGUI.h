@@ -6,27 +6,7 @@ public:
     /** CTOR
      * @param[in] title will appear in application window title
      * @param[in] vlocation set location and size of appplication window
-     * 
-     * Usage:
-     * 
-     * <pre>
-class appGUI : public cStarterGUI
-{
-public:
-    appGUI()
-        : cStarterGUI(
-              "The Appliccation",
-              {50, 50, 1000, 500})
-    {
-
-        // initialize the solution
-        ...
-
-        show();
-        run();
-    }
-    </pre>
-    */
+     */
     cStarterGUI(
         const std::string &title,
         const std::vector<int> &vlocation)
@@ -34,21 +14,6 @@ public:
     {
         fm.move(vlocation);
         fm.text(title);
-
-        fm.events().draw(
-            [&](PAINTSTRUCT &ps)
-            {
-                wex::shapes S(ps);
-                draw(S);
-            });
-    }
-    /** Draw nothing
-     * 
-     * An application should over-ride this method
-     * to perform any drawing reuired
-     */
-    virtual void draw( wex::shapes& S )
-    {
 
     }
     void show()
@@ -66,21 +31,13 @@ protected:
 class cGUI : public cStarterGUI
 {
 public:
-    cGUI()
-        : cStarterGUI(
-              "Rotating Cells",
-              {50, 50, 1000, 500})
-    {
-
-        myGrid = gen3();
-        myGrid.solve();
-
-        show();
-        run();
-    }
+    cGUI();
 
 private:
     cGrid myGrid;
+    wex::menu * myFileMenu;
+
+    void menus();
 
     // draw the edge connections for the layers
     void draw(wex::shapes &S);

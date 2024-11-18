@@ -67,12 +67,15 @@ public:
     //////////////////  Setters //////////////////
     cGrid();
 
+    void clear();
+
     /** Add row to grid
      * @param[in] types vector of chars giving cell types in row
      *
      * exception thrown if column count not equal to first row added
      */
     void addRow(const std::vector<char> &types);
+    void addRow( const std::vector<std::string>& types);
 
     /** Specify starting and finishing cell sides
      *
@@ -141,6 +144,10 @@ private:
 cGrid gen1();
 cGrid gen2();
 cGrid gen3();
+
+void read(
+    cGrid& grid,
+    const std::string& fname );
 
 // run unit tests
 bool unitTests();

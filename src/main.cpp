@@ -15,15 +15,16 @@
 
 #include "cCellRotating.h"
 
-
 cCell::cCell()
-{}
+{
+}
 
 cCell::cCell(char t)
     : myType(t)
 {
-    if (t != 'L' && t != '-') {
-        std::string st { t };
+    if (t != 'L' && t != '-')
+    {
+        std::string st{t};
         throw std::runtime_error(
             "Bad call type " + st);
     }
@@ -82,6 +83,13 @@ void cGrid::addRow(const std::vector<char> &types)
         row.emplace_back(t);
     }
     myCells.push_back(row);
+}
+void cGrid::addRow(const std::vector<std::string> &tokens)
+{
+    std::vector<char> types;
+    for (auto st : tokens)
+        types.push_back(st[0]);
+    addRow(types);
 }
 void cGrid::startFinish(
     const cCellSide &start,
@@ -247,7 +255,7 @@ void cGrid::makeGraph()
         {
             myGD.g.add(
                 "finish",
-                 myFinish.label(layer));
+                myFinish.label(layer));
             myGD.edgeWeight.push_back(1);
         }
     }
@@ -304,6 +312,74 @@ int cGrid::findEdge(
     const std::string v2) const
 {
     return myGD.g.find(v1, v2);
+}
+
+void cGrid::clear()
+{
+    myCells.clear();
+}
+
+
+std::vector<std::string> ParseSpaceDelimited(
+    const std::string &l)
+{
+    std::vector<std::string> token;
+    std::stringstream sst(l);
+    std::string a;
+    while (getline(sst, a, ' '))
+        token.push_back(a);
+
+    token.erase(
+        remove_if(
+            token.begin(),
+            token.end(),
+            [](std::string t)
+            {
+                return (t.empty());
+            }),
+        token.end());
+
+    return token;
+}
+
+void read(
+    cGrid &grid,
+    const std::string &fname)
+{
+    grid.clear();
+
+    std::ifstream ifs(fname);
+    if (!ifs.is_open())
+    {
+        throw std::runtime_error(
+            "Cannot open " + fname);
+    }
+    std::string l;
+    cCellSide start, finish;
+    while (getline(ifs, l))
+    {
+        auto tokens = ParseSpaceDelimited(l);
+        switch (tokens[0][0])
+        {
+        case 'r':
+            tokens.erase(tokens.begin());
+            grid.addRow(tokens);
+            break;
+
+        case 's':
+            start.row = atoi(tokens[1].c_str());
+            start.col = atoi(tokens[2].c_str());
+            start.side = tokens[3][0];
+            break;
+
+        case 'f':
+            finish.row = atoi(tokens[1].c_str());
+            finish.col = atoi(tokens[2].c_str());
+            finish.side = tokens[3][0];
+            break;
+        }
+    }
+    grid.startFinish( start, finish );
 }
 
 main()

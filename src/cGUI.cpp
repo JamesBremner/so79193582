@@ -11,9 +11,30 @@
 // Pathfinder graph theory library https://github.com/JamesBremner/PathFinder
 #include <GraphTheory.h>
 
-
 #include "cCellRotating.h"
 #include "cGUI.h"
+
+cGUI::cGUI()
+    : cStarterGUI(
+          "Rotating Cells",
+          {50, 50, 1000, 500})
+{
+
+    myGrid = gen3();
+    myGrid.solve();
+
+    menus();
+
+    fm.events().draw(
+        [&](PAINTSTRUCT &ps)
+        {
+            wex::shapes S(ps);
+            draw(S);
+        });
+
+    show();
+    run();
+}
 
 void cGUI::draw(wex::shapes &S)
 {
@@ -68,4 +89,61 @@ void cGUI::draw(wex::shapes &S)
                {xoff, yoff});
         yoff += 20;
     }
+}
+
+void cGUI::menus()
+{
+    wex::menubar mb(fm);
+
+    myFileMenu = new wex::menu(fm);
+    myFileMenu->append(
+        "Open",
+        [&](const std::string &title)
+        {
+            // prompt user
+            wex::filebox fb(fm);
+            fb.open();
+            read(myGrid, fb.path());
+            myGrid.solve();
+            fm.update();
+        });
+    mb.append("File", *myFileMenu);
+
+    // myViewMenu = new wex::menu(fm);
+    // myViewMenu->append(
+    //     "Inventory",
+    //     [&](const std::string &title)
+    //     {
+    //         myView = eView::inventory;
+    //         fm.update();
+    //     });
+    // myViewMenu->append(
+    //     "Inventory ( before cuts )",
+    //     [&](const std::string &title)
+    //     {
+    //         myView = eView::before;
+    //         fm.update();
+    //     });
+    // myViewMenu->append(
+    //     "Order",
+    //     [&](const std::string &title)
+    //     {
+    //         myView = eView::order;
+    //         fm.update();
+    //     });
+    // myViewMenu->append(
+    //     "Cuts",
+    //     [&](const std::string &title)
+    //     {
+    //         myView = eView::cuts;
+    //         fm.update();
+    //     });
+    // myViewMenu->append(
+    //     "Unpacked",
+    //     [&](const std::string &title)
+    //     {
+    //         myView = eView::unpacked;
+    //         fm.update();
+    //     });
+    // mb.append("View", *myViewMenu);
 }
