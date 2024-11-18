@@ -112,8 +112,8 @@ void cGrid::addRow(const std::vector<char> &types)
     myCells.push_back(row);
 }
 void cGrid::startFinish(
-    const sRowColSide &start,
-    const sRowColSide &finish)
+    const cCellSide &start,
+    const cCellSide &finish)
 {
     myStart = start;
     myFinish = finish;
@@ -154,15 +154,6 @@ cGrid::cell(int row, int col) const
     static cCell null;
     return null;
 }
-
-std::string vertexLabel(
-    int r, int c,
-    int layer,
-    char side)
-{
-    return std::to_string(r) + "_" + std::to_string(c) + "_" + std::to_string(layer) + "_" + side;
-}
-
 
 void cGrid::makeGraph()
 {
@@ -212,7 +203,7 @@ void cGrid::makeGraph()
                     if (sc_adj[0] == 'l' || sc_adj[1] == 'l')
                     {
                         std::string sv1 = srcl + "_r";
-                        std::string sv2 = vertexLabel(adj_row, adj_col, layer, 'l');
+                        std::string sv2 = cCellSide::label(adj_row, adj_col, layer, 'l');
                         // ss << sv1 << " " << sv2 << " 1\n";
                         myGD.g.add(sv1, sv2);
                         myGD.edgeWeight.push_back(1);
@@ -228,7 +219,7 @@ void cGrid::makeGraph()
                     if (sc_adj[0] == 't' || sc_adj[1] == 't')
                     {
                         std::string sv1 = srcl + "_b";
-                        std::string sv2 = vertexLabel(adj_row, adj_col, layer, 't');
+                        std::string sv2 = cCellSide::label(adj_row, adj_col, layer, 't');
                         // ss << sv1 << " " << sv2 << " 1\n";
                         myGD.g.add(sv1, sv2);
                         myGD.edgeWeight.push_back(1);
@@ -274,21 +265,17 @@ void cGrid::makeGraph()
         std::string sc = cell(myStart.row, myStart.col).connects(layer);
         if (sc[0] == myStart.side || sc[1] == myStart.side)
         {
-            std::string v2 = std::to_string(myStart.row) +
-                             "_" + std::to_string(myStart.col) +
-                             "_" + std::to_string(layer) +
-                             "_" + myStart.side;
-            myGD.g.add("start", v2);
+            myGD.g.add(
+                "start",
+                myStart.label(layer));
             myGD.edgeWeight.push_back(1);
         }
         sc = cell(myFinish.row, myFinish.col).connects(layer);
         if (sc[0] == myFinish.side || sc[1] == myFinish.side)
         {
-            std::string v2 = std::to_string(myFinish.row) +
-                             "_" + std::to_string(myFinish.col) +
-                             "_" + std::to_string(layer) +
-                             "_" + myFinish.side;
-            myGD.g.add("finish", v2);
+            myGD.g.add(
+                "finish",
+                 myFinish.label(layer));
             myGD.edgeWeight.push_back(1);
         }
     }

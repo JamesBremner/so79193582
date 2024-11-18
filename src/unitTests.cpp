@@ -61,8 +61,8 @@ cGrid gen1()
     ret.addRow({'L', '-', 'L'});
     ret.addRow({'-', '-', 'L'});
     ret.startFinish(
-        cGrid::sRowColSide(0, 0, 'l'),
-        cGrid::sRowColSide(2, 2, 'r'));
+        cCellSide(0, 0, 'l'),
+        cCellSide(2, 2, 'r'));
     return ret;
 }
 cGrid gen2()
@@ -71,8 +71,8 @@ cGrid gen2()
     ret.addRow({'L', '-'});
     ret.addRow({'L', '-'});
     ret.startFinish(
-        cGrid::sRowColSide(0, 0, 'l'),
-        cGrid::sRowColSide(1, 1, 'r'));
+        cCellSide(0, 0, 'l'),
+        cCellSide(1, 1, 'r'));
     return ret;
 }
 cGrid gen3()
@@ -82,7 +82,7 @@ cGrid gen3()
     ret.addRow({'L', '-', 'L'});
     ret.addRow({'-', 'L', 'L'});
     ret.startFinish(
-        cGrid::sRowColSide(0, 0, 'l'),
-        cGrid::sRowColSide(2, 2, 'r'));
+        cCellSide(0, 0, 'l'),
+        cCellSide(2, 2, 'r'));
     return ret;
 }
