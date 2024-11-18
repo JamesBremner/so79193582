@@ -1,3 +1,5 @@
+#include "cCellRotating.h"
+
 class cStarterGUI
 {
 public:
@@ -60,4 +62,26 @@ public:
 
 protected:
     wex::gui &fm;
+};
+class cGUI : public cStarterGUI
+{
+public:
+    cGUI()
+        : cStarterGUI(
+              "Rotating Cells",
+              {50, 50, 1000, 500})
+    {
+
+        myGrid = gen3();
+        myGrid.solve();
+
+        show();
+        run();
+    }
+
+private:
+    cGrid myGrid;
+
+    // draw the edge connections for the layers
+    void draw(wex::shapes &S);
 };

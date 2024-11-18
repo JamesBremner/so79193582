@@ -126,7 +126,7 @@ public:
     std::vector<std::string> path2D() const;
 
 private:
-    std::vector<std::vector<cCell>> myCells; // input grid of cells extended to three dimensions
+    std::vector<std::vector<cCell>> myCells; // input 2D grid of cells extended to three dimensions
     raven::graph::sGraphData myGD;           // equivalent graph ( vertices and edges )
     cCellSide myStart;                     // starting cell side
     cCellSide myFinish;                    // finishing cell side
