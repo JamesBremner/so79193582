@@ -15,13 +15,14 @@
 #include "cGUI.h"
 
 cGUI::cGUI()
-    : cStarterGUI(
-          "Rotating Cells",
-          {50, 50, 1000, 500})
+: fm(wex::maker::make())
 {
 
     myGrid = gen3();
     myGrid.solve();
+
+    fm.move({50, 50, 1000, 500});
+    fm.text("Rotating Cells");
 
     menus();
 
@@ -32,8 +33,8 @@ cGUI::cGUI()
             draw(S);
         });
 
-    show();
-    run();
+    fm.show();
+    fm.run();
 }
 
 void cGUI::draw(wex::shapes &S)
